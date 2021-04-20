@@ -1,0 +1,17 @@
+{
+  "name": "file-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/alenzeinolov/file-server.git",
+  "author": "Alen Zeinolov",
+  "license": "MIT",
+  "scripts": {
+    "dev": "nodemon src/index.js"
+  },
+  "dependencies": {
+    "mime": "^2.5.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
+}
