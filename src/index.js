@@ -1,8 +1,9 @@
-const { createReadStream } = require("fs");
-const { readdir, rmdir, stat, unlink } = require("fs").promises;
+const { createReadStream, createWriteStream } = require("fs");
+const { readdir, readFile, rmdir, stat, unlink } = require("fs").promises;
 const { createServer } = require("http");
 const mime = require("mime");
 const { urlPath } = require("./utils/urlPath");
+const { pipeStream } = require("./utils/pipeStream");
 
 let methods = Object.create(null);
 createServer((req, res) => {
@@ -39,8 +40,15 @@ methods.GET = async function (req) {
   if (stats.isDirectory()) {
     return { body: (await readdir(path)).join("\n") };
   } else {
+    // return { body: await readFile(path), type: mime.getType(path) };
     return { body: createReadStream(path), type: mime.getType(path) };
   }
+};
+
+methods.PUT = async function (req) {
+  let path = urlPath(req.url);
+  await pipeStream(req, createWriteStream(path));
+  return { status: 204 };
 };
 
 methods.DELETE = async function (req) {
