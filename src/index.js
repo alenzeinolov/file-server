@@ -1,5 +1,5 @@
 const { createReadStream, createWriteStream } = require("fs");
-const { readdir, readFile, rmdir, stat, unlink } = require("fs").promises;
+const { mkdir, readdir, rmdir, stat, unlink } = require("fs").promises;
 const { createServer } = require("http");
 const mime = require("mime");
 const { urlPath } = require("./utils/urlPath");
@@ -49,6 +49,20 @@ methods.PUT = async function (req) {
   let path = urlPath(req.url);
   await pipeStream(req, createWriteStream(path));
   return { status: 204 };
+};
+
+method.MKCOL = async function (req) {
+  let path = urlPath(req.url);
+  let stats;
+  try {
+    stats = await stat(path);
+  } catch (err) {
+    if (err.code !== "ENOENT") throw err;
+    await mkdir(path);
+    return { status: 404 };
+  }
+  if (stat.isDirectory()) return { status: 204 };
+  else return { status: 400, body: "Not a directory" };
 };
 
 methods.DELETE = async function (req) {
